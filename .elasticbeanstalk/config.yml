@@ -10,7 +10,7 @@ global:
   default_platform: Node.js 20 running on 64bit Amazon Linux 2023
   default_region: eu-north-1
   include_git_submodules: true
-  instance_profile: aws-elasticbeanstalk-ec2-role   # <-- Set the correct instance profile here
+  instance_profile: aws-elasticbeanstalk-ec2-role
   platform_name: null
   platform_version: null
   profile: null
