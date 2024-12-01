@@ -2,14 +2,15 @@ branch-defaults:
   main:
     environment: movie-recommendations-env
     group_suffix: null
+
 global:
   application_name: movie-recommendations-openai
   branch: null
-  default_ec2_keyname: null
+  default_ec2_keyname: aws-eb
   default_platform: Node.js 20 running on 64bit Amazon Linux 2023
   default_region: eu-north-1
   include_git_submodules: true
-  instance_profile: null
+  instance_profile: aws-elasticbeanstalk-ec2-role   # <-- Set the correct instance profile here
   platform_name: null
   platform_version: null
   profile: null
@@ -22,4 +23,4 @@ option_settings:
     UseEC2InstanceProfile: true
   aws:autoscaling:launchtemplate:
     LaunchTemplate: true
-    
+
