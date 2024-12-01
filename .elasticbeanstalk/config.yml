@@ -19,4 +19,7 @@ global:
 
 option_settings:
   aws:autoscaling:launchconfiguration:
+    UseEC2InstanceProfile: true
+  aws:autoscaling:launchtemplate:
     LaunchTemplate: true
+    
