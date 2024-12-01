@@ -5,8 +5,11 @@ import { OpenAI } from 'openai';
 import { ChatRequest, ChatResponse, MovieData } from '@/utils/types/chat';
 import validator from 'validator';
 import { WORD_LIMIT, DEFAULT_MOVIES } from '@/utils/consts';
+import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const region = "eu-north-1";
+const secretsManagerClient = new SecretsManagerClient({ region });
+let openai: OpenAI;
 
 function parseInput(userInput: string): { description: string; urls: string[] } {
   const urlRegex = /https:\/\/www\.imdb\.com\/title\/tt\d+(\/\S*)?/g;
@@ -68,10 +71,46 @@ function generateMovieDetails(movies: MovieData[]): string {
     .join('\n\n');
 }
 
-function validateApiKey(req: NextApiRequest): boolean {
-  const apiKey = req.headers['x-api-key'] as string | undefined;
-  return apiKey === process.env.VALID_API_KEY;
+async function validateApiKey(req: NextApiRequest): Promise<boolean> {
+  const apiKeyFromHeader = req.headers['x-api-key'] as string | undefined;
+
+  if (!apiKeyFromHeader) {
+    return false;
+  }
+
+  try {
+    const secret = await getSecret('prod/movie-recommendations');
+
+    const validApiKeyFromSecret = secret?.VALID_API_KEY || process.env.VALID_API_KEY;
+
+    if (!validApiKeyFromSecret) {
+      console.error('VALID_API_KEY not found in Secrets Manager or .env file.');
+      return false;
+    }
+
+    return apiKeyFromHeader === validApiKeyFromSecret;
+  } catch (error) {
+    console.error('Error validating API key:', error);
+    return false;
+  }
 }
+
+
+async function getSecret(secretName: string): Promise<Record<string, string> | undefined> {
+  try {
+    const command = new GetSecretValueCommand({ SecretId: secretName });
+    const data = await secretsManagerClient.send(command);
+
+    if (data.SecretString) {
+      return JSON.parse(data.SecretString);
+    }
+    return undefined;
+  } catch (error) {
+    console.error("Error fetching secret from Secrets Manager:", error);
+    throw error;
+  }
+}
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -88,6 +127,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+
+    const secret = await getSecret('prod/movie-recommendations');
+    const openaiApiKeyFromSecret = secret?.OPENAI_API_KEY;
+
+    const openaiApiKey = openaiApiKeyFromSecret || process.env.OPENAI_API_KEY;
+
+    if (!openaiApiKey) {
+      return res.status(500).json({ error: 'Failed to retrieve OpenAI API key from Secrets Manager or .env file.' });
+    }
+
+    if (!openai) {
+      openai = new OpenAI({ apiKey: openaiApiKey });
+    }
+
     const { userMessage }: ChatRequest = req.body;
 
     if (userMessage.length > WORD_LIMIT) {
