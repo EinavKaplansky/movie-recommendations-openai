@@ -1,40 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+Backend
+    chat.ts:
+        API endpoint (/api/chat) to handle user requests and generate movie recommendations.
+        Validates API keys for secure access.
+        Parses user input for IMDb URLs and fetches movie details using axios and cheerio.
+        Integrates with OpenAI to generate personalized recommendations.
+Frontend
+    Components:
+        ChatBox.tsx: Displays user and assistant messages in a scrollable chat interface.
+        InputBox.tsx: Collects user input and handles message submission.
+    Page:
+        index.tsx:
+            Main interface for FilmFinder.
+            Includes a welcome modal, chatbox, and input box.
+Utils
+    Types: Shared TypeScript definitions: ChatRequest, ChatResponse, MovieData.
+    Constants: Includes global constants like WORD_LIMIT and DEFAULT_MOVIES.
 
-## Getting Started
+Tech Stack
+    Frontend: React, Next.js, Tailwind CSS
+    Backend: Next.js API routes, OpenAI API, IMDb scraping with axios and cheerio
+    Utilities: TypeScript, Validator.js
 
-First, run the development server:
+How to Run:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Install Dependencies:
+    npm install
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set Up Environment Variables: Create a .env
+    NEXT_PUBLIC_VALID_API_KEY=your-frontend-api-key
+    VALID_API_KEY=your-backend-api-key
+    OPENAI_API_KEY=your-openai-api-key
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Run the Development Server:
+    npm run dev
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Usage:
+Describe Your Preferences:
+    Example: "I’m looking for an action movie to watch with my friends."
+Include IMDb URLs (Optional):
+    Example: "Barbie (https://www.imdb.com/title/tt1517268/?ref_=sr_t_28) I’m looking for a fun movie to watch with my friends."
+Get Recommendations:
+    FilmFinder will suggest movies based on your input.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
