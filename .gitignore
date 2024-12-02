@@ -44,3 +44,5 @@ next-env.d.ts
 !.elasticbeanstalk/config.yml
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+dist
